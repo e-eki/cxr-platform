@@ -1,0 +1,26 @@
+# ─── Java / Maven ─────────────────────────────────────────
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+*.class
+
+# ─── IDE / ОС ─────────────────────────────────────────────
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+
+# ─── Docker volumes ───────────────────────────────────────
+docker/postgres_data/
+docker/minio_data/
+docker/kafka_data/
+
+# ─── Env / secrets ────────────────────────────────────────
+.env
+*.env.local
+
+# ─── Логи ─────────────────────────────────────────────────
+*.log
+logs/

@@ -1,0 +1,19 @@
+# docker/docker-compose.yml
+version: '3.8'
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cxr-postgres
+    environment:
+      # Local development credentials. Never use in production.
+      POSTGRES_DB: cxr_db
+      POSTGRES_USER: cxr_user
+      POSTGRES_PASSWORD: cxr_pass
+    ports:
+      # - "5432:5432"
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data: cxr_postgres_data
