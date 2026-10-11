@@ -2,6 +2,7 @@ package io.github.eeki.cxr.caseservice.service;
 
 import io.github.eeki.cxr.caseservice.dto.CaseResponse;
 import io.github.eeki.cxr.caseservice.dto.CreateCaseRequest;
+import io.github.eeki.cxr.caseservice.dto.ImageUploadedEvent;
 import io.github.eeki.cxr.caseservice.model.Case;
 import io.github.eeki.cxr.caseservice.model.CaseStatus;
 import io.github.eeki.cxr.caseservice.repository.CaseRepository;
@@ -27,6 +28,7 @@ public class CaseService {
 
     private final CaseRepository caseRepository;
     private final MinioService minioService;
+    private final CaseEventProducer eventProducer;
 
     /**
      * Создаёт новый кейс в статусе {@link CaseStatus#UPLOADED}.
@@ -36,10 +38,7 @@ public class CaseService {
      */
     @Transactional
     public CaseResponse create(CreateCaseRequest request, MultipartFile file) {
-        // Генерируем уникальный ключ для файла
         String imageKey = "cases/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
-
-        // Загружаем в MinIO
         minioService.uploadFile(file, imageKey);
 
         Case newCase = Case.builder()
@@ -47,8 +46,15 @@ public class CaseService {
                 .imageKey(imageKey)
                 .status(CaseStatus.UPLOADED)
                 .build();
-
         Case saved = caseRepository.save(newCase);
+
+        // Публикуем событие после сохранения
+        eventProducer.publishImageUploaded(new ImageUploadedEvent(
+                saved.getId(),
+                saved.getImageKey(),
+                saved.getCreatedAt()
+        ));
+
         return toResponse(saved);
     }
 
