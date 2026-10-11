@@ -16,4 +16,5 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  postgres_data: cxr_postgres_data
+  postgres_data:
+    name: cxr_postgres_data
