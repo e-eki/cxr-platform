@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - includeAll:
+      path: releases/v0.1.0/schema
+      relativeToChangelogFile: true
+      errorIfMissingOrEmpty: true
+
+  # Data-миграции только для dev — включаются через context
+  - includeAll:
+      path: releases/v0.1.0/data
+      relativeToChangelogFile: true
+      errorIfMissingOrEmpty: false
+      context: dev
