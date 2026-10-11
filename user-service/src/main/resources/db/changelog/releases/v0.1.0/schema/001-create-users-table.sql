@@ -16,4 +16,5 @@ CREATE TABLE users (
     CONSTRAINT uq_users_email UNIQUE (email),
     CONSTRAINT chk_users_role CHECK (role IN ('DOCTOR', 'ADMIN'))
 );
+
 --rollback DROP TABLE users;
