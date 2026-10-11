@@ -13,6 +13,21 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql:ro
 
+  minio:
+    image: rustfs/rustfs:latest
+    container_name: cxr-minio
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Web Console
+    environment:
+      # Local development credentials. Never use in production.
+      RUSTFS_ACCESS_KEY: cxr_minio
+      RUSTFS_SECRET_KEY: cxr_minio_pass
+    volumes:
+      - minio_data:/data
+
 volumes:
   postgres_data:
     name: cxr_postgres_data
+  minio_data:
+    name: cxr_minio_data

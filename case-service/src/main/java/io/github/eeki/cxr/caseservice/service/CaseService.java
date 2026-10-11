@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -25,6 +26,7 @@ import java.util.UUID;
 public class CaseService {
 
     private final CaseRepository caseRepository;
+    private final MinioService minioService;
 
     /**
      * Создаёт новый кейс в статусе {@link CaseStatus#UPLOADED}.
@@ -33,10 +35,16 @@ public class CaseService {
      * @return созданный кейс
      */
     @Transactional
-    public CaseResponse create(CreateCaseRequest request) {
+    public CaseResponse create(CreateCaseRequest request, MultipartFile file) {
+        // Генерируем уникальный ключ для файла
+        String imageKey = "cases/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
+
+        // Загружаем в MinIO
+        minioService.uploadFile(file, imageKey);
+
         Case newCase = Case.builder()
                 .patientId(request.patientId())
-                .imageKey(request.imageKey())
+                .imageKey(imageKey)
                 .status(CaseStatus.UPLOADED)
                 .build();
 
