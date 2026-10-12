@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     # Model
     model_path: str = "/app/models/best.pt"
     model_version: str = "yolov8s-30ep"
-    confidence_threshold: float = 0.25
+    confidence_threshold: float = 0.05  # 0.25
     iou_threshold: float = 0.45
 
 
