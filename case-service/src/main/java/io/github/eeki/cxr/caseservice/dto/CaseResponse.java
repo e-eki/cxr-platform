@@ -21,9 +21,9 @@ public record CaseResponse(
         String comment,
         Instant createdAt,
         Instant updatedAt,
+        int predictionsCount,
         List<PredictionResponse> predictions
 ) {
-    /** Одно предсказание модели для отображения в UI. */
     public record PredictionResponse(
             String className,
             double confidence,

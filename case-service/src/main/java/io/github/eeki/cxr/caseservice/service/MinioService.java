@@ -1,6 +1,7 @@
 package io.github.eeki.cxr.caseservice.service;
 
 import io.minio.BucketExistsArgs;
+import io.minio.GetObjectArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
@@ -46,6 +47,18 @@ public class MinioService {
             );
         }
         return objectName;
+    }
+
+    /** Скачивает объект из хранилища в виде байтов. */
+    @SneakyThrows
+    public byte[] downloadFile(String objectName) {
+        try (InputStream is = minioClient.getObject(
+                GetObjectArgs.builder()
+                        .bucket(bucketName)
+                        .object(objectName)
+                        .build())) {
+            return is.readAllBytes();
+        }
     }
 
     /** Creates the bucket if it doesn't exist yet. */

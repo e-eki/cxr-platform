@@ -1,15 +1,20 @@
 package io.github.eeki.cxr.caseservice.service;
 
 import io.github.eeki.cxr.caseservice.dto.CaseResponse;
+import io.github.eeki.cxr.caseservice.dto.CaseReviewedEvent;
 import io.github.eeki.cxr.caseservice.dto.CreateCaseRequest;
 import io.github.eeki.cxr.caseservice.dto.ImageUploadedEvent;
 import io.github.eeki.cxr.caseservice.dto.InferenceCompletedEvent;
 import io.github.eeki.cxr.caseservice.dto.InferenceFailedEvent;
+import io.github.eeki.cxr.caseservice.dto.ReviewRequest;
+import io.github.eeki.cxr.caseservice.dto.ReviewResponse;
 import io.github.eeki.cxr.caseservice.model.Case;
 import io.github.eeki.cxr.caseservice.model.CaseStatus;
 import io.github.eeki.cxr.caseservice.model.Prediction;
+import io.github.eeki.cxr.caseservice.model.Review;
 import io.github.eeki.cxr.caseservice.repository.CaseRepository;
 import io.github.eeki.cxr.caseservice.repository.PredictionRepository;
+import io.github.eeki.cxr.caseservice.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,6 +41,7 @@ public class CaseService {
     private final PredictionRepository predictionRepository;
     private final MinioService minioService;
     private final CaseEventProducer eventProducer;
+    private final ReviewRepository reviewRepository;
 
     /**
      * Создаёт новый кейс в статусе {@link CaseStatus#UPLOADED},
@@ -91,6 +97,14 @@ public class CaseService {
         return toResponse(found, predictions);
     }
 
+    /** Возвращает содержимое снимка из хранилища. */
+    @Transactional(readOnly = true)
+    public byte[] getImageBytes(UUID id) {
+        Case caseEntity = caseRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Case not found: " + id));
+        return minioService.downloadFile(caseEntity.getImageKey());
+    }
+
     /**
      * Применяет результат успешного ML-инференса: сохраняет bbox-ы
      * и переводит кейс в статус READY_FOR_REVIEW.
@@ -143,9 +157,70 @@ public class CaseService {
         log.warn("Case {} marked as FAILED: {}", event.caseId(), event.error());
     }
 
+    /**
+     * Обрабатывает ревью кейса врачом.
+     *
+     * <p>Сохраняет решение, переводит кейс в статус REVIEWED
+     * и публикует событие в Kafka для аудита.</p>
+     */
+    @Transactional
+    public ReviewResponse review(UUID caseId, ReviewRequest request, String reviewerId) {
+        Case caseEntity = caseRepository.findById(caseId)
+                .orElseThrow(() -> new IllegalArgumentException("Case not found: " + caseId));
+
+        if (caseEntity.getStatus() != CaseStatus.READY_FOR_REVIEW) {
+            throw new IllegalStateException(
+                    "Case " + caseId + " is not ready for review (status: "
+                            + caseEntity.getStatus() + ")");
+        }
+
+        Review review = Review.builder()
+                .caseRef(caseEntity)
+                .reviewerId(reviewerId)
+                .decision(request.decision())
+                .comment(request.comment())
+                .build();
+        Review saved = reviewRepository.save(review);
+
+        // Обновляем статус кейса
+        caseEntity.setStatus(CaseStatus.REVIEWED);
+        caseEntity.setComment(request.comment());
+        caseRepository.save(caseEntity);
+
+        // Публикуем событие
+        eventProducer.publishCaseReviewed(new CaseReviewedEvent(
+                caseEntity.getId(),
+                reviewerId,
+                request.decision(),
+                saved.getCreatedAt()
+        ));
+
+        log.info("Case {} reviewed by {}: {}",
+                caseId, reviewerId, request.decision());
+
+        return new ReviewResponse(
+                saved.getId(),
+                saved.getReviewerId(),
+                saved.getDecision(),
+                saved.getComment(),
+                saved.getCreatedAt()
+        );
+    }
+
     /** Маппинг сущности в DTO без предсказаний (для списка). */
     private CaseResponse toResponse(Case c) {
-        return toResponse(c, List.of());
+        long count = predictionRepository.countByCaseRefId(c.getId());
+        return new CaseResponse(
+                c.getId(),
+                c.getPatientId(),
+                c.getImageKey(),
+                c.getStatus(),
+                c.getComment(),
+                c.getCreatedAt(),
+                c.getUpdatedAt(),
+                (int) count,
+                List.of()
+        );
     }
 
     /** Маппинг сущности в DTO с предсказаниями (для деталей). */
@@ -168,6 +243,7 @@ public class CaseService {
                 c.getComment(),
                 c.getCreatedAt(),
                 c.getUpdatedAt(),
+                predictionDtos.size(),
                 predictionDtos
         );
     }

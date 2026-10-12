@@ -16,4 +16,7 @@ public interface PredictionRepository extends JpaRepository<Prediction, UUID> {
 
     /** Удаляет все предсказания кейса (перед повторным инференсом). */
     void deleteByCaseRefId(UUID caseId);
+
+    /** Возвращает количество предсказаний для кейса. */
+    long countByCaseRefId(UUID caseId);
 }
