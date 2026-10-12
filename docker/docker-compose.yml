@@ -75,6 +75,9 @@ services:
         /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 \
           --create --if-not-exists --topic cxr.inference.failed \
           --partitions 1 --replication-factor 1
+        /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 \
+          --create --if-not-exists --topic cxr.case.reviewed \
+          --partitions 1 --replication-factor 1
         echo "Topics created successfully:"
         /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --list
     restart: "no"
@@ -83,7 +86,7 @@ services:
     image: provectuslabs/kafka-ui:latest
     container_name: cxr-kafka-ui
     ports:
-      - "8080:8080"
+      - "8090:8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: cxr-local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
