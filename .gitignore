@@ -33,3 +33,11 @@ case-service/tmp/
 ml-inference/models/*.pt
 !ml-inference/models/.gitkeep
 ml-inference/.env
+
+# Frontend
+target/
+node_modules/
+.env
+*.log
+test*.png
+ml-inference/models/*.pt
