@@ -49,6 +49,12 @@ services:
       CLUSTER_ID: cxr-kafka-cluster-01
     volumes:
       - kafka_data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 > /dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -61,6 +67,32 @@ services:
       KAFKA_CLUSTERS_0_READONLY: "false"
     depends_on:
       - kafka
+
+  ml-inference:
+    build:
+      context: ../ml-inference
+      dockerfile: Dockerfile
+    container_name: cxr-ml-inference
+    ports:
+      - "8000:8000"
+    environment:
+      LOG_LEVEL: INFO
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_CONSUMER_GROUP: ml-inference-group
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY: cxr_minio
+      S3_SECRET_KEY: cxr_minio_pass
+      S3_BUCKET: cxr-images
+      MODEL_PATH: /app/models/best.pt
+    volumes:
+      - ../ml-inference/models:/app/models:ro
+    depends_on:
+      kafka:
+        condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
+      minio:
+        condition: service_started
 
 volumes:
   postgres_data:

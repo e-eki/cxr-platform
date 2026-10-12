@@ -28,3 +28,8 @@ logs/
 # ─── Kafka ─────────────────────────────────────────────────
 docker/kafka_data/
 case-service/tmp/
+
+# ML model weights (download separately)
+ml-inference/models/*.pt
+!ml-inference/models/.gitkeep
+ml-inference/.env
