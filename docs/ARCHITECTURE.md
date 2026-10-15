@@ -51,8 +51,8 @@
 
 ### API Gateway
 
-**Технология:** Spring Cloud Gateway (reactive, WebFlux)
-**Порт:** 8080
+- **Стек:** Spring Cloud Gateway (reactive, WebFlux)
+- **Порт:** 8080
 
 Единая точка входа для фронтенда. Задачи:
 
@@ -63,9 +63,9 @@
 
 ### user-service
 
-**Технология:** Spring Boot 3.4, Spring Security
-**БД:** `user_db`
-**Порт:** 8082
+- **Стек:** Spring Boot 3.4, Spring Security
+- **БД:** `user_db`
+- **Порт:** 8082
 
 Отвечает за аутентификацию:
 
@@ -76,9 +76,9 @@
 
 ### case-service
 
-**Технология:** Spring Boot 3.4, Spring Data JPA, Spring Kafka
-**БД:** `case_db`
-**Порт:** 8081
+- **Стек:** Spring Boot 3.4, Spring Data JPA, Spring Kafka
+- **БД:** `case_db`
+- **Порт:** 8081
 
 Основной рабочий сервис:
 
@@ -91,8 +91,8 @@
 
 ### ml-inference
 
-**Технология:** Python 3.11, FastAPI, Ultralytics YOLOv8
-**Порт:** 8000
+- **Стек:** Python 3.11, FastAPI, Ultralytics YOLOv8
+- **Порт:** 8000
 
 ML-сервис:
 
@@ -105,8 +105,8 @@ ML-сервис:
 
 ### frontend
 
-**Технология:** React 18, TypeScript, Vite, Ant Design, React Query
-**Порт:** 3000 (в dev), 80 (в Docker через Nginx)
+- **Стек:** React 18, TypeScript, Vite, Ant Design, React Query
+- **Порт:** 3000 (в dev), 80 (в Docker через Nginx)
 
 - Логин и регистрация.
 - Список кейсов с автообновлением (polling каждые 5 секунд).
@@ -178,15 +178,16 @@ React Query кэширует запросы и обновляет данные �
 
 ### `user_db`
 
-**`users`:** `id` (UUID, PK), `username` (unique), `email` (unique), `password` (BCrypt), `role` (`DOCTOR`/`ADMIN`), аудит.
+**`users`:** `id` (UUID, PK), `username` (unique), `email` (unique), `password` (BCrypt), `role` (`DOCTOR`/`ADMIN`), `created_at`, `updated_at`.
 
 ### `case_db`
 
-**`cases`:** `id` (UUID, PK), `patient_id`, `image_key`, `status`, `comment`, аудит. Индексы: `status`, `patient_id`, `created_at`.
+**`cases`:** `id` (UUID, PK), `patient_id`, `image_key`, `status`, `comment`, `created_at`, `updated_at`.
+Индексы: `status`, `patient_id`, `created_at`.
 
-**`predictions`:** `id` (UUID, PK), `case_id` (FK, ON DELETE CASCADE), `class_name`, `confidence`, `x_min`, `y_min`, `x_max`, `y_max` (нормализованные `[0, 1]`), аудит.
+**`predictions`:** `id` (UUID, PK), `case_id` (FK, ON DELETE CASCADE), `class_name`, `confidence`, `x_min`, `y_min`, `x_max`, `y_max` (нормализованные `[0, 1]`), `created_at`, `updated_at`.
 
-**`reviews`:** `id` (UUID, PK), `case_id` (FK, ON DELETE CASCADE), `reviewer_id` (string), `decision` (`CONFIRMED`/`REJECTED`), `comment`, аудит.
+**`reviews`:** `id` (UUID, PK), `case_id` (FK, ON DELETE CASCADE), `reviewer_id` (string), `decision` (`CONFIRMED`/`REJECTED`), `comment`, `created_at`, `updated_at`.
 
 **Миграции:** Liquibase, файлы в `user-service/src/main/resources/db/changelog/` и `case-service/src/main/resources/db/changelog/`.
 
@@ -224,4 +225,4 @@ React Query кэширует запросы и обновляет данные �
 - Kafka в single-node режиме, без репликации.
 - Нет автoscaling и мониторинга (Prometheus/Grafana).
 
-Это осознанные упрощения для портфолио. В реальном проекте каждый пункт решается отдельно.
+Это упрощения для портфолио. В реальном проекте каждый пункт решается отдельно.

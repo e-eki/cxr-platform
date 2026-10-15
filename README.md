@@ -37,21 +37,25 @@ End-to-end платформа для анализа рентгеновских �
 |---|---|
 | ![Login](docs/screenshots/01-login.png) | ![Register](docs/screenshots/02-register.png) |
 
-### Работа с кейсами
+### Работа с кейсами - Список кейсов
 
-| Список кейсов | Детали с bbox-ами |
+| Список кейсов |
 |---|---|
-| ![Cases list](docs/screenshots/03-cases-list.png) | ![Case detail](docs/screenshots/04-case-detail.png) |
+| ![Cases list](docs/screenshots/03-cases-list.png) |
 
-### Ревью
+### Работа с кейсами - Просмотр кейса и форма ревью
 
-| Форма ревью |
+| Детали о кейсе с bbox-ами | Форма ревью |
 |---|
-| ![Case review](docs/screenshots/05-case-review.png) |
+| ![Case detail](docs/screenshots/04-case-detail.png)  | ![Case review](docs/screenshots/05-case-review.png) |
 
 ### Инфраструктура
 
-| Kafka UI — топики и сообщения | RustFS Console — хранилище снимков |
+| Kafka UI — топики и сообщения | 
+|---|---|
+| ![Kafka UI](docs/screenshots/06-kafka-ui.png) |
+
+| RustFS Console — хранилище снимков |
 |---|---|
 | ![Kafka UI](docs/screenshots/06-kafka-ui.png) | ![RustFS](docs/screenshots/07-rustfs-console.png) |
 
