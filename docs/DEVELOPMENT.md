@@ -26,7 +26,7 @@ cd docker
 docker compose up -d postgres minio kafka kafka-init kafka-ui
 ```
 
-Тогда доступны:
+Будут доступны:
 - Postgres на `localhost:5433`
 - RustFS на `localhost:9000` (API), `localhost:9001` (Console)
 - Kafka на `localhost:29092` (с хоста)
@@ -133,7 +133,7 @@ xxx-service/
 
 ### Коммиты
 
-[Conventional Commits](https://www.conventionalcommits.org/) на русском:
+[Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
 <тип>(<scope>): <описание>
@@ -187,6 +187,8 @@ ls -lh ml-inference/models/best.pt
 
 **Только после этого** запускайте `docker compose up -d --build` — иначе `ml-inference` упадёт при старте с ошибкой `Model weights not found`.
 
+**Почему веса не в git:** файл 22 МБ, и его можно воспроизвести из исходного ML-проекта. Хранить бинарники в git — плохая практика (раздувает репозиторий, ломает `git clone`). Обычно веса публикуют в GitHub Releases или в отдельном bucket — здесь используется вариант «скачать из ML-проекта».
+
 ### Обновить ML-модель
 
 1. Скопировать новый `best.pt` в `ml-inference/models/`.
@@ -232,6 +234,7 @@ curl http://localhost:8000/health           # ml-inference
 
 - **Service-level JWT** в `case-service` и `user-service` отключён (`permitAll`). Gateway валидирует токены, но сами сервисы доверяют любому запросу из внутренней сети.
 - **BaseEntity и другие общие классы** дублируются между сервисами. Планируется вынести в отдельный Maven-модуль `common`.
+- **Нет тестов.** Нужно добавить как минимум smoke-тесты для критических сценариев (создание кейса, обработка события от ML, ревью).
 
 ---
 
