@@ -20,7 +20,25 @@ docker/kafka_data/
 # ─── Env / secrets ────────────────────────────────────────
 .env
 *.env.local
+docker/.env
 
 # ─── Логи ─────────────────────────────────────────────────
 *.log
 logs/
+
+# ─── Kafka ─────────────────────────────────────────────────
+docker/kafka_data/
+case-service/tmp/
+
+# ML model weights (download separately)
+ml-inference/models/*.pt
+!ml-inference/models/.gitkeep
+ml-inference/.env
+
+# Frontend
+target/
+node_modules/
+.env
+*.log
+test*.png
+ml-inference/models/*.pt

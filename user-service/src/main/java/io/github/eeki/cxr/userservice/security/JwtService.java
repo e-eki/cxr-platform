@@ -59,6 +59,7 @@ public class JwtService {
         Date exp = new Date(now.getTime() + expirationMs);
         return Jwts.builder()
                 .subject(userDetails.getUsername())
+                .claim("role", userDetails.getAuthorities().iterator().next().getAuthority())
                 .issuedAt(now)
                 .expiration(exp)
                 .signWith(signingKey)
