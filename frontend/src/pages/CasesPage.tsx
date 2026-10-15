@@ -30,7 +30,8 @@ const STATUS_COLORS: Record<CaseStatus, string> = {
   UPLOADED: 'default',
   PROCESSING: 'processing',
   READY_FOR_REVIEW: 'warning',
-  REVIEWED: 'success',
+  CONFIRMED: 'success',
+  REJECTED: 'error',
   FAILED: 'error',
 };
 
@@ -38,7 +39,8 @@ const STATUS_LABELS: Record<CaseStatus, string> = {
   UPLOADED: 'Загружен',
   PROCESSING: 'Обработка',
   READY_FOR_REVIEW: 'Готов к ревью',
-  REVIEWED: 'Проверен',
+  CONFIRMED: 'Подтверждён',
+  REJECTED: 'Отклонён',
   FAILED: 'Ошибка',
 };
 

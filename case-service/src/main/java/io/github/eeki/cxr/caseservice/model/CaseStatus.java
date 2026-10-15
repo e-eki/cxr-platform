@@ -3,7 +3,7 @@ package io.github.eeki.cxr.caseservice.model;
 /**
  * Статусы жизненного цикла кейса (снимка).
  *
- * <p>Переход: UPLOADED → PROCESSING → READY_FOR_REVIEW → REVIEWED.
+ * <p>Переход: UPLOADED → PROCESSING → READY_FOR_REVIEW → CONFIRMED | REJECTED.
  * В случае ошибки обработки — FAILED.</p>
  */
 public enum CaseStatus {
@@ -17,8 +17,11 @@ public enum CaseStatus {
     /** Результат ML получен, ожидает ревью врача. */
     READY_FOR_REVIEW,
 
-    /** Врач провёл ревью. */
-    REVIEWED,
+    /** Врач подтвердил результат ML. */
+    CONFIRMED,
+
+    /** Врач отклонил результат ML. */
+    REJECTED,
 
     /** Обработка завершилась ошибкой. */
     FAILED

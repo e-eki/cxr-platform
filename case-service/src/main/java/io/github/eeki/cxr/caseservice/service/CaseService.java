@@ -183,7 +183,10 @@ public class CaseService {
         Review saved = reviewRepository.save(review);
 
         // Обновляем статус кейса
-        caseEntity.setStatus(CaseStatus.REVIEWED);
+        CaseStatus newStatus = (request.decision() == Review.Decision.CONFIRMED)
+                ? CaseStatus.CONFIRMED
+                : CaseStatus.REJECTED;
+        caseEntity.setStatus(newStatus);
         caseEntity.setComment(request.comment());
         caseRepository.save(caseEntity);
 

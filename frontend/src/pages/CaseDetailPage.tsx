@@ -26,7 +26,8 @@ const STATUS_COLORS: Record<CaseStatus, string> = {
   UPLOADED: 'default',
   PROCESSING: 'processing',
   READY_FOR_REVIEW: 'warning',
-  REVIEWED: 'success',
+  CONFIRMED: 'success',
+  REJECTED: 'error',
   FAILED: 'error',
 };
 
@@ -34,7 +35,8 @@ const STATUS_LABELS: Record<CaseStatus, string> = {
   UPLOADED: 'Загружен',
   PROCESSING: 'Обработка',
   READY_FOR_REVIEW: 'Готов к ревью',
-  REVIEWED: 'Проверен',
+  CONFIRMED: 'Подтверждён',
+  REJECTED: 'Отклонён',
   FAILED: 'Ошибка',
 };
 
@@ -261,10 +263,21 @@ export default function CaseDetailPage() {
           </Card>
         )}
 
-        {data.status === 'REVIEWED' && (
+        {data.status === 'CONFIRMED' && (
           <Alert
             type="success"
-            message="Ревью проведено"
+            showIcon
+            message="Снимок подтверждён врачом"
+            description={data.comment || 'Без комментария'}
+            style={{ marginTop: 16 }}
+          />
+        )}
+
+        {data.status === 'REJECTED' && (
+          <Alert
+            type="error"
+            showIcon
+            message="Снимок отклонён врачом"
             description={data.comment || 'Без комментария'}
             style={{ marginTop: 16 }}
           />

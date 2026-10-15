@@ -19,7 +19,8 @@ export type CaseStatus =
   | 'UPLOADED'
   | 'PROCESSING'
   | 'READY_FOR_REVIEW'
-  | 'REVIEWED'
+  | 'CONFIRMED'
+  | 'REJECTED'
   | 'FAILED';
 
 export interface Prediction {
